@@ -8,13 +8,15 @@ case $- in
       *) return;;
 esac
 
-RED='\033[31m'
-GREEN='\033[32m'
+RED='\033[95m'
+GREEN='\033[92m'
+MAGENTA='\033[95m'
+CYAN='\033[96m'
 WHITE='\033[0m'
 get_current_branch() {
     local show_current_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
     if [ -n "$show_current_branch" ]; then
-        echo -e "${GREEN}git:($RED$show_current_branch$GREEN)$WHITE "
+        echo -e "${MAGENTA}git:($CYAN$show_current_branch$MAGENTA)$WHITE "
     fi
 }
 
@@ -67,7 +69,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -130,7 +132,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PS1="$PS1 \$(get_current_branch)"
+export PS1="$PS1$(get_current_branch)\n$ "
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
