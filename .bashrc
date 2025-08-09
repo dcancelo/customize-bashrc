@@ -8,18 +8,8 @@ case $- in
       *) return;;
 esac
 
-RED='\033[95m'
-GREEN='\033[92m'
-MAGENTA='\033[95m'
-CYAN='\033[96m'
-WHITE='\033[0m'
-LIGHT_GREEN='\e[1;32m'
-get_current_branch() {
-    local show_current_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
-    if [ -n "$show_current_branch" ]; then
-        echo -e "${LIGHT_GREEN}git:($CYAN$show_current_branch$LIGHT_GREEN)$WHITE "
-    fi
-}
+RED='\e[31m'
+GREEN='\e[92m'
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -133,7 +123,26 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PS1="$PS1$(get_current_branch)$ "
+
+force_color_prompt=yes
+color_prompt=yes
+parse_git_branch() {
+ value=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+ if [ -n "$value" ]; then
+    color_prompt=yes
+    if [ "$color_prompt" = yes ]; then
+        echo -e "\001\e[92m\002git:(\001\e[31m\002$value\001\e[92m\002)"
+    else
+        echo "git:($value)"
+    fi
+ fi
+}
+if [ "$color_prompt" = yes ]; then
+ PS1='${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\] $(parse_git_branch)\[\e[00m\] $ '
+else
+ PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w $(parse_git_branch) $ '
+fi
+unset color_prompt force_color_prompt
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
